@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>.NET 10 — Windows Installation Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #f5f4f0;
+    --surface:   #ffffff;
+    --border:    #e2e0d8;
+    --accent:    #1a1a2e;
+    --blue:      #2563eb;
+    --blue-soft: #eff4ff;
+    --green:     #16a34a;
+    --green-soft:#f0fdf4;
+    --amber:     #d97706;
+    --amber-soft:#fffbeb;
+    --text:      #374151;
+    --text-dim:  #9ca3af;
+    --text-dark: #111827;
+    --mono:      'JetBrains Mono', monospace;
+    --sans:      'Manrope', sans-serif;
+    --radius:    10px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* Subtle dot pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, #c8c5bc 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: .45;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 56px 24px 100px;
+  }
+
+  /* ── Header ── */
+  header { margin-bottom: 52px; }
+
+  .os-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 999px;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 800;
+    color: var(--text-dark);
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--blue);
+  }
+
+  .lead {
+    color: var(--text-dim);
+    font-size: 14px;
+    max-width: 500px;
+  }
+
+  /* ── Step card ── */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+
+  .step {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 0 18px;
+    position: relative;
+  }
+
+  /* Connector line */
+  .step:not(:last-child) .step-left::after {
+    content: '';
+    position: absolute;
+    top: 48px;
+    left: 23px;
+    width: 2px;
+    height: calc(100% - 16px);
+    background: var(--border);
+  }
+
+  .step-left {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 2px;
+  }
+
+  .num {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-dark);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .num.done {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+
+  .step-body {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin-bottom: 16px;
+  }
+
+  .step-body h2 {
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .step-body h2 .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--blue-soft);
+    color: var(--blue);
+  }
+
+  .step-body p {
+    font-size: 13.5px;
+    color: var(--text);
+    margin-bottom: 14px;
+  }
+
+  .step-body p:last-child { margin-bottom: 0; }
+
+  /* ── Code block ── */
+  .code-block {
+    background: #1e1e2e;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 12px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .code-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: #6c7086;
+  }
+
+  .copy-btn {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    background: none;
+    border: 1px solid #313244;
+    color: #6c7086;
+    padding: 3px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+
+  .copy-btn:hover { border-color: #89b4fa; color: #89b4fa; }
+  .copy-btn.copied { border-color: #a6e3a1; color: #a6e3a1; }
+
+  pre {
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: #cdd6f4;
+  }
+
+  .t-cmd   { color: #89b4fa; }
+  .t-arg   { color: #cdd6f4; }
+  .t-str   { color: #a6e3a1; }
+  .t-flag  { color: #f38ba8; }
+  .t-dim   { color: #6c7086; }
+
+  /* ── Image placeholder ── */
+  .img-slot {
+    margin: 14px 0 4px;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  /* When src is set, the real img shows */
+  .img-slot img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* Placeholder shown when src points to missing file */
+  .img-slot img.placeholder-vis,
+  .img-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 28px 20px;
+    color: var(--text-dim);
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .img-placeholder {
+    display: flex; /* shown by default */
+  }
+
+  .img-placeholder .icon {
+    font-size: 28px;
+    opacity: .5;
+  }
+
+  .img-placeholder code {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--border);
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: var(--text);
+  }
+
+  /* ── Callout ── */
+  .callout {
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    margin: 10px 0;
+    display: flex;
+    gap: 10px;
+  }
+
+  .callout.info  { background: var(--blue-soft);  border-left: 3px solid var(--blue); }
+  .callout.ok    { background: var(--green-soft); border-left: 3px solid var(--green); }
+  .callout.warn  { background: var(--amber-soft); border-left: 3px solid var(--amber); }
+
+  .callout .icon { flex-shrink: 0; font-size: 15px; margin-top: 1px; }
+
+  .callout strong { font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 2px; }
+
+  /* ── Verify section ── */
+  .verify {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    background: var(--surface);
+    margin-top: 8px;
+  }
+
+  .verify h2 {
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+
+  .verify p { font-size: 13.5px; margin-bottom: 14px; }
+
+  .output {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--green-soft);
+    border: 1px solid #bbf7d0;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    color: var(--green);
+  }
+
+  /* ── Footer ── */
+  footer {
+    margin-top: 56px;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="os-pill">
+      <span>⊞</span> Windows
+    </div>
+    <h1>.NET 10 &amp; <em>VS Code</em><br>Installation Guide</h1>
+    <p class="lead">Follow each step in order. All commands run in a single PowerShell window.</p>
+  </header>
+
+  <div class="steps">
+
+    <!-- ── Step 1 ── -->
+    <div class="step">
+      <div class="step-left"><div class="num">1</div></div>
+      <div class="step-body">
+        <h2>Open PowerShell as Administrator</h2>
+        <p>Press <strong>Win + S</strong>, type <code>PowerShell</code>, right-click the result and choose <em>Run as Administrator</em>.</p>
+
+        <!-- IMAGE PLACEHOLDER — replace src with your filename -->
+        <div class="img-slot">
+          <div class="img-placeholder">
+            <span class="icon">🖼️</span>
+            <span>Screenshot goes here</span>
+            <code>powershell.png</code>
+          </div>
+          <!-- Uncomment and set src when ready:
+          <img src="powershell.png" alt="Opening PowerShell as Administrator" width="350" />
+          -->
+        </div>
+
+        <div class="callout warn">
+          <span class="icon">⚠️</span>
+          <div><strong>Administrator required</strong>Running as Administrator lets winget install software system-wide and allows changing the execution policy.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Step 2 ── -->
+    <div class="step">
+      <div class="step-left"><div class="num">2</div></div>
+      <div class="step-body">
+        <h2>Set PowerShell Execution Policy <span class="tag">Required</span></h2>
+        <p>Windows blocks scripts by default. Paste this command and press <strong>Enter</strong>:</p>
+
+        <div class="code-block">
+          <div class="code-bar">
+            <span class="code-label">powershell</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><span class="t-cmd">Set-ExecutionPolicy</span> <span class="t-str">Unrestricted</span> <span class="t-flag">-Scope</span> <span class="t-arg">CurrentUser</span> <span class="t-flag">-Force</span></pre>
+        </div>
+
+        <div class="callout info">
+          <span class="icon">ℹ️</span>
+          <div><strong>What this does</strong><code>-Scope CurrentUser</code> limits this change to your account only. Other users on the machine are unaffected.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Step 3 ── -->
+    <div class="step">
+      <div class="step-left"><div class="num">3</div></div>
+      <div class="step-body">
+        <h2>Confirm if Prompted</h2>
+        <p>If you see a confirmation prompt, type <strong>Y</strong> and press <strong>Enter</strong> to proceed.</p>
+
+        <!-- IMAGE PLACEHOLDER -->
+        <div class="img-slot">
+          <div class="img-placeholder">
+            <span class="icon">🖼️</span>
+            <span>Screenshot goes here</span>
+            <code>execution-policy.png</code>
+          </div>
+          <!-- Uncomment and set src when ready:
+          <img src="execution-policy.png" alt="Execution policy confirmation prompt" />
+          -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Step 4 ── -->
+    <div class="step">
+      <div class="step-left"><div class="num">4</div></div>
+      <div class="step-body">
+        <h2>Install the .NET 10 SDK <span class="tag">winget</span></h2>
+        <p><strong>winget</strong> is Windows' built-in package manager. The SDK includes the runtime, ASP.NET Core, and the <code>dotnet</code> CLI — no separate downloads needed.</p>
+
+        <div class="code-block">
+          <div class="code-bar">
+            <span class="code-label">powershell</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><span class="t-cmd">winget install</span> <span class="t-str">Microsoft.DotNet.SDK.10</span></pre>
+        </div>
+
+        <!-- IMAGE PLACEHOLDER -->
+        <div class="img-slot">
+          <div class="img-placeholder">
+            <span class="icon">🖼️</span>
+            <span>Screenshot goes here</span>
+            <code>winget.png</code>
+          </div>
+          <!-- Uncomment and set src when ready:
+          <img src="winget.png" alt="winget installing .NET SDK" />
+          -->
+        </div>
+
+        <div class="callout ok">
+          <span class="icon">✅</span>
+          <div><strong>This installs everything</strong>The .NET SDK bundles the base runtime and ASP.NET Core runtime. You do not need to install the runtime separately.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Step 5 ── -->
+    <div class="step">
+      <div class="step-left"><div class="num">5</div></div>
+      <div class="step-body">
+        <h2>Install VS Code &amp; C# Extensions</h2>
+        <p>Run these commands <strong>one by one</strong>. After VS Code installs, open a new terminal window so the <code>code</code> command becomes available, then run the extension command.</p>
+
+        <div class="code-block">
+          <div class="code-bar">
+            <span class="code-label">powershell — VS Code</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><span class="t-cmd">winget install</span> <span class="t-str">Microsoft.VisualStudioCode</span></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-bar">
+            <span class="code-label">powershell — C# Dev Kit extension</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><span class="t-cmd">code</span> <span class="t-flag">--install-extension</span> <span class="t-str">ms-dotnettools.csdevkit</span></pre>
+        </div>
+
+        <!-- IMAGE PLACEHOLDER -->
+        <div class="img-slot">
+          <div class="img-placeholder">
+            <span class="icon">🖼️</span>
+            <span>Screenshot goes here</span>
+            <code>image.png</code>
+          </div>
+          <!-- Uncomment and set src when ready:
+          <img src="image.png" alt="VS Code with C# Dev Kit installed" />
+          -->
+        </div>
+
+        <div class="callout info">
+          <span class="icon">ℹ️</span>
+          <div><strong>C# Dev Kit installs two extensions</strong>It automatically pulls in the base C# (Roslyn) extension as a dependency — you get IntelliSense, error checking, and a Solution Explorer out of the box.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Step 6 ── -->
+    <div class="step">
+      <div class="step-left"><div class="num done">✓</div></div>
+      <div class="step-body">
+        <h2>Done! Verify your installation</h2>
+        <p>Open a <strong>new</strong> PowerShell window (no need for Administrator this time) and run:</p>
+
+        <div class="code-block">
+          <div class="code-bar">
+            <span class="code-label">powershell</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><span class="t-cmd">dotnet</span> <span class="t-arg">--version</span>
+<span class="t-cmd">dotnet</span> <span class="t-arg">--list-runtimes</span></pre>
+        </div>
+
+        <p style="margin-top:14px;">You should see output like this:</p>
+
+        <div class="verify">
+          <div class="output">10.0.x</div>
+          <div class="output">Microsoft.AspNetCore.App 10.0.x [C:\Program Files\dotnet\shared\...]</div>
+          <div class="output">Microsoft.NETCore.App 10.0.x [C:\Program Files\dotnet\shared\...]</div>
+          <p style="margin-top:12px;font-size:13px;">Both <code>AspNetCore.App</code> and <code>NETCore.App</code> appearing confirms the SDK and runtimes installed correctly.</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /steps -->
+
+  <footer>
+    <span>Windows 10 1809+ · Windows 11</span>
+    <span>.NET 10 LTS · VS Code · C# Dev Kit</span>
+  </footer>
+
+</div>
+
+<script>
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
